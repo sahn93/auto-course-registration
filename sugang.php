@@ -2,30 +2,22 @@
 
 require_once 'TesseractOCR.php';
 
-attempt(0);
+attempt();
 
 $tried_num = 0;
 $applied_num = 0;
 
-function attempt($check) {
-    $class_num = $check+1;
-    if ($class_num==3) {
-        $class_num=7;
-    } else if ($class_num==5) {
-        $class_num=10;
-    }
-    echo "강좌번호: ".$class_num."\n";
-        
+function attempt() {
 
 	global $tried_num;
 	global $applied_num;
 	
-	$STD_NUMBER = 
-	$PASSWORD = 
+	$STD_NUMBER = "";
+	$PASSWORD = "";
 
 	$login_url = "https://sugang.snu.ac.kr/sugang/j_login";
 	// STD_NUMBER에 학점을 2012-xxxx 형식으로, PASSWORD에 비번을 넣는다.
-	$post_fields = "j_username=".$STD_NUMBER."&j_password=".$PASSWORD&."v_password=".$PASSWORD."&t_password=%EC%88%98%EA%B0%95%EC%8B%A0%EC%B2%AD+%EB%B9%84%EB%B0%80%EB%B2%88%ED%98%B8";
+	$post_fields = "j_username=".$STD_NUMBER."&j_password=".$PASSWORD."&v_password=".$PASSWORD."&t_password=%EC%88%98%EA%B0%95%EC%8B%A0%EC%B2%AD+%EB%B9%84%EB%B0%80%EB%B2%88%ED%98%B8";
 
 	// 관심강의 화면
 	$listurl = "http://sugang.snu.ac.kr/sugang/ca/ca103.action";
@@ -57,10 +49,10 @@ function attempt($check) {
 	$ocr_num = run_ocr($number_url, $loginCookie);
 	echo $ocr_num;
 
-	// 6. 수강신청 요청 보내기 (아래 필드 중 check이 관심강좌 리스트 중 위에서 몇번째냐는것. 0이면 맨 위에거 체크한것임)
+	// 6. 수강신청 요청 보내기 
     // 크롬에서 수강신청 요청 보내보고 그 파라미터부분 복사해오면됨.
 
-	$reqfields = "inputText=".$ocr_num."&workType=I&repeat=C&check=0&sbjtCd=031.001&ltNo=00".$class_num;
+    $reqfields = "workType=I&sortKey=&sortOrder=&openSchyy=2018&openShtmFg=U000200001&openDetaShtmFg=U000300001&sbjtCd=326.313&ltNo=002&check=1&openSchyy=2018&openShtmFg=U000200001&openDetaShtmFg=U000300001&sbjtCd=3341.201&ltNo=002&openSchyy=2018&openShtmFg=U000200001&openDetaShtmFg=U000300001&sbjtCd=M1314.001300&ltNo=001&inputText=".$ocr_num;
 
 	$apply_result = apply($apply_url, $loginCookie, $reqfields);
 
@@ -71,7 +63,7 @@ function attempt($check) {
 
 	echo $applied_num.'/'.$tried_num."\n";
 
-	attempt((++$check % 5));
+    attempt();
 }
 
 
@@ -82,11 +74,11 @@ function attempt($check) {
 function apply($url, $cookiefile, $fields) {
 	$ch = curl_init ($url);
 
-    // 안돌아갈때 헤더를 고치면 되는 경우가 있음.
+    // 헤더의 Content-Length를 동일하게 맞춰야 함
 	$headers = array(
         'Host: sugang.snu.ac.kr',
         'Connection: keep-alive',
-        'Content-Length: 64',
+        'Content-Length: 318',
         'Cache-Control: max-age=0',
         'Origin: http://sugang.snu.ac.kr',
         'Upgrade-Insecure-Requests: 1',
@@ -206,7 +198,7 @@ function auth_site_cookie_store($loginurl, $postfields)
  $headers = array(
 	 	'Host: sugang.snu.ac.kr',
 		'Connection: keep-alive',
-		'Content-Length: 144',
+		'Content-Length: 154',
 		'Cache-Control: max-age=0',
 		'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 		'Origin: http://sugang.snu.ac.kr',
